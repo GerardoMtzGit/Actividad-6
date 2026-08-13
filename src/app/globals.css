@@ -1599,4 +1599,40 @@ input:checked + .switch-slider:before {
     background-color: #f1f5f9 !important;
     color: #000 !important;
   }
+  .portada-sheet {
+    page-break-before: avoid !important;
+    page-break-after: always !important;
+    margin-bottom: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+  }
+  .section-card {
+    page-break-before: always !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  .calculator-grid, .academic-table-container, .procedimiento-container, .conclusion-box, .excel-tip-box {
+    page-break-inside: avoid !important;
+  }
 }
+
+/* Combined view notice styling */
+.combined-activity-header {
+  background: linear-gradient(135deg, var(--brand-color), #5e1113);
+  color: #fff;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-md);
+  font-family: var(--font-title);
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-md);
+  font-size: 1.1rem;
+}
+

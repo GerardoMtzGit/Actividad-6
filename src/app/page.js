@@ -344,6 +344,20 @@ export default function Home() {
     );
   };
 
+  const sectionsToRender = currentActivity === 'ambas'
+    ? sectionOrder.filter(id => {
+        const isCustom = id.startsWith('custom-');
+        const config = isCustom 
+          ? customSections.find(s => s.id === id)
+          : sectionsConfig[id];
+        return config && config.visible;
+      })
+    : [activeSection];
+
+  const sections7ToRender = currentActivity === 'ambas'
+    ? ['portada7', 'objetivo7', 'resumen7', 'sensibilidad7', 'conclusion7', 'referencias7']
+    : [activeSection];
+
   return (
     <div className="app-container">
       {/* Navigation Header */}
@@ -359,14 +373,17 @@ export default function Home() {
                   setCurrentActivity(val);
                   if (val === 'actividad6') {
                     setActiveSection('portada');
-                  } else {
+                  } else if (val === 'actividad7') {
                     setActiveSection('portada7');
+                  } else {
+                    setActiveSection('ambas');
                   }
                 }}
                 className="logo-activity-select"
               >
                 <option value="actividad7">Actividad 7</option>
                 <option value="actividad6">Actividad 6</option>
+                <option value="ambas">Ambas Actividades</option>
               </select>
             </span>
           </div>
@@ -413,7 +430,7 @@ export default function Home() {
       {/* Main App Workspace */}
       <main className="main-content">
         {/* Navigation Bar */}
-        {currentActivity === 'actividad6' ? (
+        {currentActivity === 'actividad6' && (
           <nav className="anchor-nav">
             {sectionOrder.map(id => {
               const isCustom = id.startsWith('custom-');
@@ -434,7 +451,8 @@ export default function Home() {
               );
             })}
           </nav>
-        ) : (
+        )}
+        {currentActivity === 'actividad7' && (
           <nav className="anchor-nav">
             <button className={`anchor-link ${activeSection === 'portada7' ? 'active' : ''}`} onClick={() => setActiveSection('portada7')}>
               Portada
@@ -457,8 +475,14 @@ export default function Home() {
           </nav>
         )}
 
+        {currentActivity === 'ambas' && (
+          <div className="combined-activity-header no-print">
+            📚 Vista Unificada: Actividad 6 (Problemas) &amp; Actividad 7 (Resumen y Sensibilidad)
+          </div>
+        )}
+
         {/* SECTION: PORTADA */}
-        {activeSection === 'portada' && sectionsConfig.portada.visible && (
+        {sectionsToRender.includes('portada') && sectionsConfig.portada.visible && (
           <section id="portada" className={`portada-sheet theme-${sectionsConfig.portada.theme}`}>
             {isEditorMode && (
               <div className="editor-section-toolbar">
@@ -571,7 +595,7 @@ export default function Home() {
         )}
 
         {/* SECTION: EJERCICIO 1 */}
-        {activeSection === 'ejercicio1' && sectionsConfig.ejercicio1.visible && (
+        {sectionsToRender.includes('ejercicio1') && sectionsConfig.ejercicio1.visible && (
           <section id="ejercicio1" className={`section-card theme-${sectionsConfig.ejercicio1.theme}`}>
             {isEditorMode && (
               <div className="editor-section-toolbar">
@@ -762,7 +786,7 @@ export default function Home() {
         )}
 
         {/* SECTION: EJERCICIO 2 */}
-        {activeSection === 'ejercicio2' && sectionsConfig.ejercicio2.visible && (
+        {sectionsToRender.includes('ejercicio2') && sectionsConfig.ejercicio2.visible && (
           <section id="ejercicio2" className={`section-card theme-${sectionsConfig.ejercicio2.theme}`}>
             {isEditorMode && (
               <div className="editor-section-toolbar">
@@ -1005,7 +1029,7 @@ export default function Home() {
         )}
 
         {/* SECTION: EJERCICIO 3 */}
-        {activeSection === 'ejercicio3' && sectionsConfig.ejercicio3.visible && (
+        {sectionsToRender.includes('ejercicio3') && sectionsConfig.ejercicio3.visible && (
           <section id="ejercicio3" className={`section-card theme-${sectionsConfig.ejercicio3.theme}`}>
             {isEditorMode && (
               <div className="editor-section-toolbar">
@@ -1176,7 +1200,7 @@ export default function Home() {
         )}
 
         {/* SECTION: EJERCICIO 4 */}
-        {activeSection === 'ejercicio4' && sectionsConfig.ejercicio4.visible && (
+        {sectionsToRender.includes('ejercicio4') && sectionsConfig.ejercicio4.visible && (
           <section id="ejercicio4" className={`section-card theme-${sectionsConfig.ejercicio4.theme}`}>
             {isEditorMode && (
               <div className="editor-section-toolbar">
@@ -1337,7 +1361,7 @@ export default function Home() {
         )}
 
         {/* SECTION: EJERCICIO 5 */}
-        {activeSection === 'ejercicio5' && sectionsConfig.ejercicio5.visible && (
+        {sectionsToRender.includes('ejercicio5') && sectionsConfig.ejercicio5.visible && (
           <section id="ejercicio5" className={`section-card theme-${sectionsConfig.ejercicio5.theme}`}>
             {isEditorMode && (
               <div className="editor-section-toolbar">
@@ -1506,7 +1530,7 @@ export default function Home() {
         )}
 
         {/* SECTION: REFERENCIAS */}
-        {activeSection === 'referencias' && sectionsConfig.referencias.visible && (
+        {sectionsToRender.includes('referencias') && sectionsConfig.referencias.visible && (
           <section id="referencias" className={`section-card theme-${sectionsConfig.referencias.theme}`}>
             {isEditorMode && (
               <div className="editor-section-toolbar">
@@ -1561,10 +1585,9 @@ export default function Home() {
         )}
 
         {/* SECTION: CUSTOM SECTION */}
-        {activeSection.startsWith('custom-') && (
-          (() => {
-            const customSec = customSections.find(s => s.id === activeSection);
-            if (!customSec || !customSec.visible) return null;
+        {sectionsToRender.filter(id => id.startsWith('custom-')).map(customId => {
+          const customSec = customSections.find(s => s.id === customId);
+          if (!customSec || !customSec.visible) return null;
 
             const rDecimal = customSec.rate / 100;
             let vpTotal = 0;
@@ -1787,12 +1810,12 @@ export default function Home() {
                 </div>
               </section>
             );
-          })()
-        )}
+          })
+        }
         {/* --- ACTIVIDAD 7 SECTIONS --- */}
 
         {/* SECTION: PORTADA 7 */}
-        {currentActivity === 'actividad7' && activeSection === 'portada7' && (
+        {(currentActivity === 'actividad7' || currentActivity === 'ambas') && sections7ToRender.includes('portada7') && (
           <section id="portada7" className="portada-sheet theme-red">
             <div className="portada-header">
               <h2 className="portada-uni">Universidad del Valle de México</h2>
@@ -1836,7 +1859,7 @@ export default function Home() {
         )}
 
         {/* SECTION: OBJETIVO 7 */}
-        {currentActivity === 'actividad7' && activeSection === 'objetivo7' && (
+        {(currentActivity === 'actividad7' || currentActivity === 'ambas') && sections7ToRender.includes('objetivo7') && (
           <section id="objetivo7" className="section-card theme-red">
             <div className="section-header">
               <h2 className="section-title">Objetivo del Resumen</h2>
@@ -1853,7 +1876,7 @@ export default function Home() {
         )}
 
         {/* SECTION: RESUMEN 7 */}
-        {currentActivity === 'actividad7' && activeSection === 'resumen7' && (
+        {(currentActivity === 'actividad7' || currentActivity === 'ambas') && sections7ToRender.includes('resumen7') && (
           <section id="resumen7" className="section-card theme-red">
             <div className="section-header">
               <h2 className="section-title">Resumen de Técnicas y Análisis Financiero</h2>
@@ -1951,7 +1974,7 @@ export default function Home() {
         )}
 
         {/* SECTION: SENSIBILIDAD 7 */}
-        {currentActivity === 'actividad7' && activeSection === 'sensibilidad7' && (
+        {(currentActivity === 'actividad7' || currentActivity === 'ambas') && sections7ToRender.includes('sensibilidad7') && (
           (() => {
             const baseFlows = [flow7_1, flow7_2, flow7_3, flow7_4];
             
@@ -2151,7 +2174,7 @@ export default function Home() {
         )}
 
         {/* SECTION: CONCLUSION 7 */}
-        {currentActivity === 'actividad7' && activeSection === 'conclusion7' && (
+        {(currentActivity === 'actividad7' || currentActivity === 'ambas') && sections7ToRender.includes('conclusion7') && (
           <section id="conclusion7" className="section-card theme-red">
             <div className="section-header">
               <h2 className="section-title">Conclusión General de Viabilidad Financiera</h2>
@@ -2175,7 +2198,7 @@ export default function Home() {
         )}
 
         {/* SECTION: REFERENCIAS 7 */}
-        {currentActivity === 'actividad7' && activeSection === 'referencias7' && (
+        {(currentActivity === 'actividad7' || currentActivity === 'ambas') && sections7ToRender.includes('referencias7') && (
           <section id="referencias7" className="section-card theme-red">
             <div className="section-header">
               <h2 className="section-title">Referencias Bibliográficas (APA)</h2>
